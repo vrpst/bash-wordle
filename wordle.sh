@@ -7,8 +7,8 @@ validate_guess() {
     if [ "${#1}" -ne 5 ]; then
         return 1
     else
-        check=$(grep -iwx $1 ./targets)
-        if [ $check = $1 ]; then
+        check=$(grep -iwx $1 ./guesses)
+        if [ "$check" = "$1" ]; then
             return 0    # success
         else
             return 1    # not found
@@ -24,20 +24,17 @@ create_hints() {
         if  [ ${guessa[$i]} = ${targeta[$i]} ]; then
             lettersa[$i]=1
         fi
-        #printf "${lettersa[i]}\n"
     done
     for j in {0..4}; do
-        if [ ${lettersa[$j]} -eq 0 ]; then  # if the letter is does not exactly map
+        if [ ${lettersa[$j]} -eq 0 ]; then      # if the letter is does not exactly map, check it
             brk=0
             k=0
-            while (($k < 5)) && (($brk == 0)); do  # 
-                printf "aa ${lettersa[j]} ${guessa[j]} ${targeta[k]} $brk $k\n"
-                if [ ${targetchk[$k]} -eq 0 ]; then  # if this is an index that does not exactly map FIX JK DUPLICATE BUG
-                    if [ ${guessa[$j]} = ${targeta[$k]} ]; then  # and the values are the same
-                        printf "asdasdasd\n"
-                        lettersa[j]=2  # assign a 2
-                        targetchk[k]=3
-                        brk=$((brk+1))
+            while (($k < 5)) && (($brk == 0)); do       # constraints for the word
+                if [ ${targetchk[$k]} -eq 0 ]; then     # if this is comparing to an index in the target that has not been satisfied yet
+                    if [ ${guessa[$j]} = ${targeta[$k]} ]; then     # and the values are the same
+                        lettersa[j]=2       # assign a 2
+                        targetchk[k]=3      # mark the target index as satisfied 
+                        brk=$((brk+1))      # break
                     fi
                 fi
                 k=$((k+1))
@@ -52,10 +49,10 @@ create_hints() {
 
 if validate_guess $guess 1 ; then
     if [ $guess = $target ]; then
-        printf "solved!"
+        printf "solved!\n"
     else
         create_hints $guess
-        printf "not solved"
+        printf "not solved\n"
     fi
 else
     exit
