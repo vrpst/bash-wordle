@@ -3,11 +3,13 @@ target="audio"
 targeta=(a u d i o)
 
 read guess
+guessa=(${guess:0:1} ${guess:1:1} ${guess:2:1} ${guess:3:1} ${guess:4:1})
+
 validate_guess() {
     if [ "${#1}" -ne 5 ]; then
         return 1
     else
-        check=$(grep -iwx $1 ./guesses)
+        check=$(grep -iwx $1 ./targets)
         if [ "$check" = "$1" ]; then
             return 0    # success
         else
@@ -19,7 +21,6 @@ validate_guess() {
 create_hints() {
     lettersa=(0 0 0 0 0)
     targetchk=(0 0 0 0 0)
-    guessa=(${1:0:1} ${1:1:1} ${1:2:1} ${1:3:1} ${1:4:1})
     for i in {0..4}; do
         if  [ ${guessa[$i]} = ${targeta[$i]} ]; then
             lettersa[$i]=1
@@ -47,11 +48,30 @@ create_hints() {
 
 }
 
+render_hint() {
+    hint=""
+    YELLOW="\033[1;33m"
+    GREEN="\033[1;32m"
+    NONE="\033[1;37m"
+    for i in {0..4}; do
+        if [ ${lettersa[$i]} -eq 1 ]; then
+            hint="${hint}${GREEN}${guessa[$i]}${NONE}"
+        elif [ ${lettersa[$i]} -eq 2 ]; then
+            hint="${hint}${YELLOW}${guessa[$i]}${NONE}"
+        else
+            hint="${hint}${guessa[$i]}"
+        fi
+        printf "${hint}\n"
+    done
+    printf "${hint}\n"
+}
+
 if validate_guess $guess 1 ; then
     if [ $guess = $target ]; then
         printf "solved!\n"
     else
         create_hints $guess
+        render_hint
         printf "not solved\n"
     fi
 else
