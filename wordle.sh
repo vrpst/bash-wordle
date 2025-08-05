@@ -18,6 +18,7 @@ validate_guess() {
 
 create_hints() {
     lettersa=(0 0 0 0 0)
+    targetchk=(0 0 0 0 0)
     guessa=(${1:0:1} ${1:1:1} ${1:2:1} ${1:3:1} ${1:4:1})
     for i in {0..4}; do
         if  [ ${guessa[$i]} = ${targeta[$i]} ]; then
@@ -31,10 +32,11 @@ create_hints() {
             k=0
             while (($k < 5)) && (($brk == 0)); do  # 
                 printf "aa ${lettersa[j]} ${guessa[j]} ${targeta[k]} $brk $k\n"
-                if [ ${lettersa[$j]} -eq 0 ]; then  # if this is an index that does not exactly map FIX JK DUPLICATE BUG
+                if [ ${targetchk[$k]} -eq 0 ]; then  # if this is an index that does not exactly map FIX JK DUPLICATE BUG
                     if [ ${guessa[$j]} = ${targeta[$k]} ]; then  # and the values are the same
                         printf "asdasdasd\n"
-                        lettersa[$j]=2  # assign a 2
+                        lettersa[j]=2  # assign a 2
+                        targetchk[k]=3
                         brk=$((brk+1))
                     fi
                 fi
